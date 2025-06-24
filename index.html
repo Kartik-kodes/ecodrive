@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>EcoDrive 🌱♻️</title>
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+
+<body>
+  <header>
+    <h1>EcoDrive 🌱</h1>
+  </header>
+  <nav class="nav">
+    Want to know how much fuel would cost💰 and Co2 emission🌫️ before going on a trip?
+  </nav>
+  <main>
+    <div class="form-layout">
+      <div class="side-card" id="comparison-card">Compare options here after results!💸</div>
+
+
+      <form id="trip-form" onsubmit="calculate(); return false;">
+        <label>Distance (km): <input type="number" id="Distance" required /></label>
+        <label>Fuel Type:
+          <select id="fuelType">
+            <option>Petrol</option>
+            <option>Diesel</option>
+            <option>Electric</option>
+          </select>
+        </label>
+        <label>Vehicle Model: <input type="text" id="VehicleType" required /></label>
+        <label>Fuel Price (₹): <input type="number" id="FuelPrice" required /></label>
+        <button id="btn" type="submit">Calculate</button>
+        <p id="answer"></p>
+
+      </form>
+      <div class="side-card" id="weather-card">
+
+
+
+
+
+      </div>
+    </div>
+    <div id="result">
+      <!-- Placeholder for fuel cost, CO₂ output -->
+
+
+    </div>
+
+
+
+  </main>
+
+  <footer>
+    <p>Built by Kartik - EcoDrive Project</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+
+</html>
