@@ -1,27 +1,31 @@
-const express = require(`express`);
-
-const cors = require(`cors`);
-
-
-
+const express = require("express");
+const cors = require("cors");
 const app = express();
-const PORT= 3000;
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
+let trips = []; // In-memory storage
 
-app.post('/submit', (req, res) => {
-  const { distance, fuelType, vehicleModel, fuelPrice } = req.body;
-
-
-  const trip = { distance, fuelType, vehicleModel, fuelPrice };
-  console.log('📝 Received trip:', trip);
-
-  res.status(200).json({ message: 'Trip received!' });
+// POST route to receive trip data
+app.post("/submit", (req, res) => {
+  const trip = req.body;
+  console.log("Trip received:", trip);
+  trips.unshift(trip); // add to beginning
+  res.status(201).json({ message: "Trip data received." });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+// ✅ ADD THIS: GET /trips route
+app.get("/trips", (req, res) => {
+  res.json(trips);
 });
 
+// Default route
+app.get("/", (req, res) => {
+  res.send("EcoDrive Backend is Running");
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});

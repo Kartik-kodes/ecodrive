@@ -18,7 +18,7 @@ async function calculate() {
   console.log("Sending tripData:", tripData);
 
   try {
-    const response = await fetch("http://localhost:3000/submit", {
+    const response = await fetch("https://ecodrive.onrender.com/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(tripData),
@@ -28,7 +28,8 @@ async function calculate() {
       throw new Error(`Server responded with ${response.status}`);
     }
 
-    const tripsResponse = await fetch("http://localhost:3000/trips");
+    // Optional: replace with your actual deployed GET endpoint
+    const tripsResponse = await fetch("https://ecodrive.onrender.com/trips");
     const trips = await tripsResponse.json();
     const latest = trips[0];
 
@@ -38,7 +39,7 @@ async function calculate() {
       emissionFactor = 2.31;
     } else if (latest.fuelType === "Diesel") {
       mileage = 18;
-      emissionFactor = 2.68; // ✅ Fixed typo
+      emissionFactor = 2.68;
     } else if (latest.fuelType === "Electric") {
       mileage = 6;
       emissionFactor = 0;
@@ -48,7 +49,6 @@ async function calculate() {
     const cost = fuelUsed * latest.fuelPrice;
     const co2 = fuelUsed * emissionFactor;
 
-    // ✅ Show Result
     const resultDiv = document.getElementById("result");
     resultDiv.style.display = "block";
     resultDiv.innerHTML = `
@@ -60,10 +60,7 @@ async function calculate() {
       <p><strong>CO₂ Emission:</strong> ${co2.toFixed(2)} kg</p>
     `;
 
-    // ✅ Show Comparison
     showComparison(latest.distance);
-
-    // ✅ Reset form
     document.getElementById("trip-form").reset();
 
   } catch (err) {
