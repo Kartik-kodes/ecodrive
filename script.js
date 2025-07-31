@@ -17,60 +17,58 @@ async function calculate() {
 
   console.log("Sending tripData:", tripData);
 
-  try {
-    const response = await fetch("https://ecodrive.onrender.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(tripData),
-    });
+try {
+  const response = await fetch("https://ecodrive.onrender.com/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(tripData),
+  });
 
-    if (!response.ok) {
-      throw new Error(`Server responded with ${response.status}`);
-    }
-
-    // Optional: replace with your actual deployed GET endpoint
-    const tripsResponse = await fetch("https://ecodrive.onrender.com/trips");
-    const trips = await tripsResponse.json();
-    const latest = trips[0];
-
-    let mileage, emissionFactor;
-    if (latest.fuelType === "Petrol") {
-      mileage = 15;
-      emissionFactor = 2.31;
-    } else if (latest.fuelType === "Diesel") {
-      mileage = 18;
-      emissionFactor = 2.68;
-    } else if (latest.fuelType === "Electric") {
-      mileage = 6;
-      emissionFactor = 0;
-    }
-
-    const fuelUsed = latest.distance / mileage;
-    const cost = fuelUsed * latest.fuelPrice;
-    const co2 = fuelUsed * emissionFactor;
-
-    const resultDiv = document.getElementById("result");
-    resultDiv.style.display = "block";
-    resultDiv.innerHTML = `
-      <h3>Trip Summary</h3>
-      <p><strong>Vehicle:</strong> ${latest.vehicleModel}</p>
-      <p><strong>Distance:</strong> ${latest.distance} km</p>
-      <p><strong>Fuel Used:</strong> ${fuelUsed.toFixed(2)} ${fuelType === 'Electric' ? 'kWh' : 'litres'}</p>
-      <p><strong>Estimated Cost:</strong> ₹${cost.toFixed(2)}</p>
-      <p><strong>CO₂ Emission:</strong> ${co2.toFixed(2)} kg</p>
-    `;
-
-    showComparison(latest.distance);
-    document.getElementById("trip-form").reset();
-
-  } catch (err) {
-    console.error("Fetch failed", err);
-    alert("Error submitting trip");
-  } finally {
-    button.disabled = false;
-    button.innerText = "Calculate";
+  if (!response.ok) {
+    throw new Error(`Server responded with ${response.status}`);
   }
+
+  const tripsResponse = await fetch("https://ecodrive.onrender.com/trips");
+  const trips = await tripsResponse.json();
+  const latest = trips[0];
+
+  let mileage, emissionFactor;
+  if (latest.fuelType === "Petrol") {
+    mileage = 15;
+    emissionFactor = 2.31;
+  } else if (latest.fuelType === "Diesel") {
+    mileage = 18;
+    emissionFactor = 2.68;
+  } else if (latest.fuelType === "Electric") {
+    mileage = 6;
+    emissionFactor = 0;
+  }
+
+  const fuelUsed = latest.distance / mileage;
+  const cost = fuelUsed * latest.fuelPrice;
+  const co2 = fuelUsed * emissionFactor;
+
+  const resultDiv = document.getElementById("result");
+  resultDiv.style.display = "block";
+  resultDiv.innerHTML = `
+    <h3>Trip Summary</h3>
+    <p><strong>Vehicle:</strong> ${latest.vehicleModel}</p>
+    <p><strong>Distance:</strong> ${latest.distance} km</p>
+    <p><strong>Fuel Used:</strong> ${fuelUsed.toFixed(2)} ${fuelType === 'Electric' ? 'kWh' : 'litres'}</p>
+    <p><strong>Estimated Cost:</strong> ₹${cost.toFixed(2)}</p>
+    <p><strong>CO₂ Emission:</strong> ${co2.toFixed(2)} kg</p>
+  `;
+
+  showComparison(latest.distance);
+  document.getElementById("trip-form").reset();
+} catch (err) {
+  console.error("Fetch failed", err);
+  alert("Error submitting trip");
+} finally {
+  button.disabled = false;
+  button.innerText = "Calculate";
 }
+
 
 // ✅ Comparison Function should be OUTSIDE the main function
 function showComparison(distance) {
@@ -126,4 +124,4 @@ window.addEventListener("load", () => {
   }, () => {
     weatherCard.innerHTML = "Permission denied for location.";
   });
-});
+})};
