@@ -17,60 +17,58 @@ async function calculate() {
 
   console.log("Sending tripData:", tripData);
 
-try {
-  const response = await fetch("https://ecodrive.onrender.com/submit", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(tripData),
-  });
+  try {
+    const response = await fetch("https://ecodrive.onrender.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(tripData),
+    });
 
-  if (!response.ok) {
-    throw new Error(`Server responded with ${response.status}`);
+    if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+
+    const tripsResponse = await fetch("https://ecodrive.onrender.com/trips");
+    const trips = await tripsResponse.json();
+    const latest = trips[0];
+
+    let mileage, emissionFactor;
+    if (latest.fuelType === "Petrol") {
+      mileage = 15;
+      emissionFactor = 2.31;
+    } else if (latest.fuelType === "Diesel") {
+      mileage = 18;
+      emissionFactor = 2.68;
+    } else if (latest.fuelType === "Electric") {
+      mileage = 6;
+      emissionFactor = 0;
+    }
+
+    const fuelUsed = latest.distance / mileage;
+    const cost = fuelUsed * latest.fuelPrice;
+    const co2 = fuelUsed * emissionFactor;
+
+    const resultDiv = document.getElementById("result");
+    resultDiv.style.display = "block";
+    resultDiv.innerHTML = `
+      <h3>Trip Summary</h3>
+      <p><strong>Vehicle:</strong> ${latest.vehicleModel}</p>
+      <p><strong>Distance:</strong> ${latest.distance} km</p>
+      <p><strong>Fuel Used:</strong> ${fuelUsed.toFixed(2)} ${fuelType === 'Electric' ? 'kWh' : 'litres'}</p>
+      <p><strong>Estimated Cost:</strong> ₹${cost.toFixed(2)}</p>
+      <p><strong>CO₂ Emission:</strong> ${co2.toFixed(2)} kg</p>
+    `;
+
+    showComparison(latest.distance);
+    document.getElementById("trip-form").reset();
+  } catch (err) {
+    console.error("Fetch failed", err);
+    alert("Error submitting trip");
+  } finally {
+    button.disabled = false;
+    button.innerText = "Calculate";
   }
-
-  const tripsResponse = await fetch("https://ecodrive.onrender.com/trips");
-  const trips = await tripsResponse.json();
-  const latest = trips[0];
-
-  let mileage, emissionFactor;
-  if (latest.fuelType === "Petrol") {
-    mileage = 15;
-    emissionFactor = 2.31;
-  } else if (latest.fuelType === "Diesel") {
-    mileage = 18;
-    emissionFactor = 2.68;
-  } else if (latest.fuelType === "Electric") {
-    mileage = 6;
-    emissionFactor = 0;
-  }
-
-  const fuelUsed = latest.distance / mileage;
-  const cost = fuelUsed * latest.fuelPrice;
-  const co2 = fuelUsed * emissionFactor;
-
-  const resultDiv = document.getElementById("result");
-  resultDiv.style.display = "block";
-  resultDiv.innerHTML = `
-    <h3>Trip Summary</h3>
-    <p><strong>Vehicle:</strong> ${latest.vehicleModel}</p>
-    <p><strong>Distance:</strong> ${latest.distance} km</p>
-    <p><strong>Fuel Used:</strong> ${fuelUsed.toFixed(2)} ${fuelType === 'Electric' ? 'kWh' : 'litres'}</p>
-    <p><strong>Estimated Cost:</strong> ₹${cost.toFixed(2)}</p>
-    <p><strong>CO₂ Emission:</strong> ${co2.toFixed(2)} kg</p>
-  `;
-
-  showComparison(latest.distance);
-  document.getElementById("trip-form").reset();
-} catch (err) {
-  console.error("Fetch failed", err);
-  alert("Error submitting trip");
-} finally {
-  button.disabled = false;
-  button.innerText = "Calculate";
 }
 
-
-// ✅ Comparison Function should be OUTSIDE the main function
+// ✅ OUTSIDE calculate()
 function showComparison(distance) {
   const trainCostPerKm = 0.6;
   const trainCo2PerKm = 0.02;
@@ -91,6 +89,8 @@ function showComparison(distance) {
     `;
   }
 }
+
+// ✅ OUTSIDE all
 window.addEventListener("load", () => {
   const weatherCard = document.getElementById("weather-card");
 
@@ -109,7 +109,7 @@ window.addEventListener("load", () => {
       const weather = data.current_weather;
       const temperature = weather.temperature;
       const windspeed = weather.windspeed;
-      const condition = weather.weathercode; // weathercode is numeric
+      const condition = weather.weathercode;
 
       weatherCard.innerHTML = `
         <h3>🌤️ Local Weather</h3>
@@ -124,4 +124,5 @@ window.addEventListener("load", () => {
   }, () => {
     weatherCard.innerHTML = "Permission denied for location.";
   });
-})};
+});
+
