@@ -13,10 +13,10 @@ app.post("/submit", (req, res) => {
   const trip = req.body;
   console.log("Trip received:", trip);
   trips.unshift(trip); // add to beginning
-  res.status(201).json({ message: "Trip data received." });
+  res.status(201).json({ message: "Trip data received.", trip });
 });
 
-// ✅ ADD THIS: GET /trips route
+// ✅ GET /trips route
 app.get("/trips", (req, res) => {
   res.json(trips);
 });

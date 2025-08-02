@@ -24,11 +24,13 @@ async function calculate() {
       body: JSON.stringify(tripData),
     });
 
-    if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Server responded with ${response.status}`);
+    }
 
-    const tripsResponse = await fetch("https://ecodrive.onrender.com/trips");
-    const trips = await tripsResponse.json();
-    const latest = trips[0];
+    const result = await response.json();
+    const latest = result.trip;
+    console.log("Received trip from backend:", latest);
 
     let mileage, emissionFactor;
     if (latest.fuelType === "Petrol") {
@@ -52,7 +54,7 @@ async function calculate() {
       <h3>Trip Summary</h3>
       <p><strong>Vehicle:</strong> ${latest.vehicleModel}</p>
       <p><strong>Distance:</strong> ${latest.distance} km</p>
-      <p><strong>Fuel Used:</strong> ${fuelUsed.toFixed(2)} ${fuelType === 'Electric' ? 'kWh' : 'litres'}</p>
+      <p><strong>Fuel Used:</strong> ${fuelUsed.toFixed(2)} ${latest.fuelType === 'Electric' ? 'kWh' : 'litres'}</p>
       <p><strong>Estimated Cost:</strong> ₹${cost.toFixed(2)}</p>
       <p><strong>CO₂ Emission:</strong> ${co2.toFixed(2)} kg</p>
     `;
@@ -60,15 +62,14 @@ async function calculate() {
     showComparison(latest.distance);
     document.getElementById("trip-form").reset();
   } catch (err) {
-    console.error("Fetch failed", err);
-    alert("Error submitting trip");
+    console.error("Fetch failed:", err);
+    alert("Error submitting trip. Try again later.");
   } finally {
     button.disabled = false;
     button.innerText = "Calculate";
   }
 }
 
-// ✅ OUTSIDE calculate()
 function showComparison(distance) {
   const trainCostPerKm = 0.6;
   const trainCo2PerKm = 0.02;
@@ -90,7 +91,6 @@ function showComparison(distance) {
   }
 }
 
-// ✅ OUTSIDE all
 window.addEventListener("load", () => {
   const weatherCard = document.getElementById("weather-card");
 
@@ -99,30 +99,30 @@ window.addEventListener("load", () => {
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(async position => {
-    const { latitude, longitude } = position.coords;
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const { latitude, longitude } = position.coords;
 
-    try {
-      const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
-      const data = await response.json();
+      try {
+        const response = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`
+        );
+        const data = await response.json();
+        const weather = data.current_weather;
 
-      const weather = data.current_weather;
-      const temperature = weather.temperature;
-      const windspeed = weather.windspeed;
-      const condition = weather.weathercode;
-
-      weatherCard.innerHTML = `
-        <h3>🌤️ Local Weather</h3>
-        <div><strong>Temp:</strong> ${temperature}°C</div>
-        <div><strong>Wind:</strong> ${windspeed} km/h</div>
-        <div><strong>Code:</strong> ${condition}</div>
-      `;
-    } catch (err) {
-      weatherCard.innerHTML = "Failed to fetch weather.";
-      console.error(err);
+        weatherCard.innerHTML = `
+          <h3>🌤️ Local Weather</h3>
+          <div><strong>Temp:</strong> ${weather.temperature}°C</div>
+          <div><strong>Wind:</strong> ${weather.windspeed} km/h</div>
+          <div><strong>Code:</strong> ${weather.weathercode}</div>
+        `;
+      } catch (err) {
+        weatherCard.innerHTML = "Failed to fetch weather.";
+        console.error(err);
+      }
+    },
+    () => {
+      weatherCard.innerHTML = "Permission denied for location.";
     }
-  }, () => {
-    weatherCard.innerHTML = "Permission denied for location.";
-  });
+  );
 });
-
