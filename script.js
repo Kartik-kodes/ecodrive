@@ -17,16 +17,16 @@ async function calculate() {
 
   console.log("Sending tripData:", tripData);
 
-  try {
-    const response = await fetch("https://ecodrive.onrender.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(tripData),
-    });
+try {
+  const response = await fetch("https://ecodrive-2458.onrender.com/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(tripData),
+  });
 
-    if (!response.ok) {
-      throw new Error(`Server responded with ${response.status}`);
-    }
+  if (!response.ok) {
+    throw new Error(`Server responded with ${response.status}`);
+  }
 
     const result = await response.json();
     const latest = result.trip;
