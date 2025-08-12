@@ -1,4 +1,4 @@
-/* Base Reset */
+
 * {
   margin: 0;
   padding: 0;
@@ -6,7 +6,7 @@
 }
 
 body {
-  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #a8d5a2;
   color: #2b5d2a;
   overflow-x: hidden;
@@ -29,14 +29,14 @@ footer {
   width: 100%;
 }
 
-/* Container for layout */
+
 .container {
   display: flex;
   justify-content: center;
   padding: 2rem;
 }
 
-/* Form Styles */
+
 form {
   position: relative;
   z-index: 2;
