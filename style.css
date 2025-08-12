@@ -1,4 +1,60 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+*/
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  font-size: 16px;
+}
+
+
+body {
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+nav, label, #result, form, .side-card {
+  opacity: 1; 
+}
+
+
+@keyframes slideDown {
+  from { transform: translateY(-12px); }
+  to   { transform: translateY(0); }
+}
+
+
+form, nav, #result, .side-card, form label {
+  animation: slideDown 0.45s ease forwards;
+  animation-delay: 0.2s;
+}
+
+
+form label {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  opacity: 1; 
+}
+
+@media (max-width: 480px) {
+  body { font-size: 15px; }
+  .side-card {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    padding: 1rem;
+  }
+  form {
+    width: 95%;
+    padding: 1rem;
+    gap: 2rem;
+    margin: 1rem auto;
+  }
+  form label { font-size: 0.95rem; }
+  nav { font-size: 16px; padding: 1rem; }
+}
+
 * {
   margin: 0;
   padding: 0;
